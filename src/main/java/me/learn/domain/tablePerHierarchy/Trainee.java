@@ -13,4 +13,24 @@ public class Trainee extends Participant{
 	private int yearOfPassingOut;
 	@Column
 	private String degree;
+	public String getCollege() {
+		return college;
+	}
+	public void setCollege(String college) {
+		this.college = college;
+	}
+	public int getYearOfPassingOut() {
+		return yearOfPassingOut;
+	}
+	public void setYearOfPassingOut(int yearOfPassingOut) {
+		this.yearOfPassingOut = yearOfPassingOut;
+	}
+	public String getDegree() {
+		return degree;
+	}
+	public void setDegree(String degree) {
+		this.degree = degree;
+	}
+	
+	
 }

@@ -8,6 +8,8 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,7 +36,8 @@ public class Participant {
 	private int phoneNumber;
 	@Column(name="date_joining")
 	private Date dateOfJoining;
-	@Column
+	@Column(columnDefinition="TEXT")
+	@Enumerated(EnumType.STRING)
 	private TITLE title;
 	@Column(name="date_leaving")
 	private Date dateOfLeaving;
@@ -42,5 +45,61 @@ public class Participant {
 	private Date dateCreated;
 	@Column(name="upd_ts")
 	private Date lastUpdated;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public int getPhoneNumber() {
+		return phoneNumber;
+	}
+	public void setPhoneNumber(int phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+	public Date getDateOfJoining() {
+		return dateOfJoining;
+	}
+	public void setDateOfJoining(Date dateOfJoining) {
+		this.dateOfJoining = dateOfJoining;
+	}
+	public TITLE getTitle() {
+		return title;
+	}
+	public void setTitle(TITLE title) {
+		this.title = title;
+	}
+	public Date getDateOfLeaving() {
+		return dateOfLeaving;
+	}
+	public void setDateOfLeaving(Date dateOfLeaving) {
+		this.dateOfLeaving = dateOfLeaving;
+	}
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	public Date getLastUpdated() {
+		return lastUpdated;
+	}
+	public void setLastUpdated(Date lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+	public int getId() {
+		return id;
+	}
+	
+	public String toString(){
+		return name;
+		
+	}
 	
 }
