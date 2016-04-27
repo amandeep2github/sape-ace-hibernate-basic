@@ -8,6 +8,7 @@ import javax.persistence.Enumerated;
 import me.learn.domain.TRAINER_TYPE;
 
 @Entity
+//not using @DiscriminatorValue, default will be class's simple name
 public class Trainer extends Participant{
 	@Column(name="rates_per_hour")
 	private Double ratesPerHour;
