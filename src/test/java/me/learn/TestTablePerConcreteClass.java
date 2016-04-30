@@ -6,8 +6,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import me.learn.domain.TITLE;
 import me.learn.domain.TRAINER_TYPE;
@@ -30,10 +32,15 @@ import org.junit.Test;
 public class TestTablePerConcreteClass {
 	
 	static SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-	public static final Logger logger = Logger.getLogger(TestTablePerConcreteClass.class.getName());
+	private static final Logger logger = Logger.getLogger(TestTablePerConcreteClass.class.getName());
+	 
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		FileHandler fh = new FileHandler("./logs/TestTablePerConcreteClass.log");
+		logger.addHandler(fh);
+		SimpleFormatter formatter = new SimpleFormatter();  
+        fh.setFormatter(formatter);  
 	}
 
 	@AfterClass

@@ -1,5 +1,7 @@
 package me.learn.domain.tablePerConcreteClass;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,6 +12,7 @@ import me.learn.domain.TRAINER_TYPE;
 
 @Entity
 @Table(name="trainer_table_per_concrete_class")
+
 public class Trainer extends Participant{
 	@Column(name="rates_per_hour")
 	private Double ratesPerHour;

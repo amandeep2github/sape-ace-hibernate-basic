@@ -21,7 +21,7 @@ import me.learn.domain.TITLE;
 
 @Entity
 @Table(name="participant_table_per_concrete_class")
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)//some comments
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public class Participant {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
