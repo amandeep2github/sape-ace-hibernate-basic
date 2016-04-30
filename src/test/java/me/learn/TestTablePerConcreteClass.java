@@ -11,14 +11,13 @@ import java.util.logging.Logger;
 
 import me.learn.domain.TITLE;
 import me.learn.domain.TRAINER_TYPE;
-import me.learn.domain.tablePerHierarchy.Participant;
-import me.learn.domain.tablePerHierarchy.Trainee;
-import me.learn.domain.tablePerHierarchy.Trainer;
+import me.learn.domain.tablePerConcreteClass.Participant;
+import me.learn.domain.tablePerConcreteClass.Trainee;
+import me.learn.domain.tablePerConcreteClass.Trainer;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -28,10 +27,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class TestAnnotationsBased {
+public class TestTablePerConcreteClass {
 	
 	static SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-	public static final Logger logger = Logger.getLogger(TestAnnotationsBased.class.getName());
+	public static final Logger logger = Logger.getLogger(TestTablePerConcreteClass.class.getName());
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
