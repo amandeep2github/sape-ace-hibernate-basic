@@ -40,7 +40,22 @@ public class TestTablePerConcreteClass {
 		FileHandler fh = new FileHandler("./logs/TestTablePerConcreteClass.log");
 		logger.addHandler(fh);
 		SimpleFormatter formatter = new SimpleFormatter();  
-        fh.setFormatter(formatter);  
+		fh.setFormatter(formatter);  
+
+		// A SessionFactory is set up once for an application!
+		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
+		.configure() // configures settings from hibernate.cfg.xml
+		.build();
+		try {
+			sessionFactory = new MetadataSources( registry ).addAnnotatedClass(Participant.class).addAnnotatedClass(Trainer.class).addAnnotatedClass(Trainee.class)
+					.buildMetadata().buildSessionFactory();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			// The registry would be destroyed by the SessionFactory, but we had trouble building the SessionFactory
+			// so destroy it manually.
+			StandardServiceRegistryBuilder.destroy( registry );
+		}
 	}
 
 	@AfterClass
@@ -66,20 +81,6 @@ public class TestTablePerConcreteClass {
 
 	@Before
 	public void setUp() throws Exception {
-		// A SessionFactory is set up once for an application!
-		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
-				.configure() // configures settings from hibernate.cfg.xml
-				.build();
-		try {
-			sessionFactory = new MetadataSources( registry ).addAnnotatedClass(Participant.class).addAnnotatedClass(Trainer.class).addAnnotatedClass(Trainee.class)
-					.buildMetadata().buildSessionFactory();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			// The registry would be destroyed by the SessionFactory, but we had trouble building the SessionFactory
-			// so destroy it manually.
-			StandardServiceRegistryBuilder.destroy( registry );
-		}
 		
 	}
 
@@ -89,7 +90,7 @@ public class TestTablePerConcreteClass {
 	}
 
 	@Test
-	public void testCreationTablePerHierarchyData() {
+	public void testCreationTablePerCriteriaData() {
 		//fail("Not yet implemented");
 		Participant trnr1 = createTrainer("Amandeep", "amandeep@sapient.xyz", "04-11-2008", TITLE.MGR);
 		Participant trnr2 = createTrainer("Amit", "amitj@sapient.xyz", "15-06-2011", TITLE.SAL1);

@@ -2,11 +2,7 @@ package me.learn.domain.tablePerSubclass;
 
 import java.util.Date;
 
-import javax.annotation.Generated;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

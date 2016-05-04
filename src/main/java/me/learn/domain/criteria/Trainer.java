@@ -1,15 +1,22 @@
-package me.learn.domain.tablePerConcreteClass;
+package me.learn.domain.criteria;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import me.learn.domain.TRAINER_TYPE;
 
 @Entity
-@Table(name="trainer_table_per_concrete_class")
+@Table(name="trainer_table_per_subclass_criteria")
 
 public class Trainer extends Participant{
 	@Column(name="rates_per_hour")
@@ -19,6 +26,9 @@ public class Trainer extends Participant{
 	private TRAINER_TYPE type;
 	@Column(name="linked_in_url")
 	private String linkedInURL;
+	@OneToMany(cascade=CascadeType.ALL)
+	@Fetch(FetchMode.SUBSELECT)
+	private Set<Skill> skills;
 	public Double getRatesPerHour() {
 		return ratesPerHour;
 	}
@@ -36,6 +46,12 @@ public class Trainer extends Participant{
 	}
 	public void setLinkedInURL(String linkedInURL) {
 		this.linkedInURL = linkedInURL;
+	}
+	public Set<Skill> getSkills() {
+		return skills;
+	}
+	public void setSkills(Set<Skill> skills) {
+		this.skills = skills;
 	}
 	
 	

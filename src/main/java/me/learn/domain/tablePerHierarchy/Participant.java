@@ -2,7 +2,6 @@ package me.learn.domain.tablePerHierarchy;
 
 import java.util.Date;
 
-import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;

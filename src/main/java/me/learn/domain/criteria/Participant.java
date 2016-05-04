@@ -1,4 +1,4 @@
-package me.learn.domain.tablePerConcreteClass;
+package me.learn.domain.criteria;
 
 import java.util.Date;
 
@@ -16,8 +16,8 @@ import javax.persistence.Table;
 import me.learn.domain.TITLE;
 
 @Entity
-@Table(name="participant_table_per_concrete_class")
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Table(name="participant_table_per_subclass_criteria")
+@Inheritance(strategy=InheritanceType.JOINED)
 public class Participant {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
