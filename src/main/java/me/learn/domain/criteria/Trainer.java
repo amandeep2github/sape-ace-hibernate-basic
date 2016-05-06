@@ -27,7 +27,7 @@ public class Trainer extends Participant{
 	@Column(name="linked_in_url")
 	private String linkedInURL;
 	@OneToMany(cascade=CascadeType.ALL)
-	@Fetch(FetchMode.SUBSELECT)
+	@Fetch(FetchMode.JOIN)
 	private Set<Skill> skills;
 	public Double getRatesPerHour() {
 		return ratesPerHour;

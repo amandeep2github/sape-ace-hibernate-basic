@@ -83,13 +83,13 @@ public class TestCriteria {
 		Session session = sessionFactory.openSession();
 		//Transaction t = session.beginTransaction();
 		Criteria criteria = session.createCriteria(Trainer.class);
-		List<Trainer> trainers = criteria.list();
+		List<Trainer> trainers = criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
 		for(Trainer trnr: trainers){
 			logger.log(Level.INFO, String.format("Participant - %s", trnr));
-			for(Skill skill:trnr.getSkills()){
-				logger.log(Level.INFO, String.format("Skill - %s", skill));
-				
-			}
+//			for(Skill skill:trnr.getSkills()){
+//				logger.log(Level.INFO, String.format("Skill - %s", skill));
+//				
+//			}
 			
 			//session.delete(participant);
 		}

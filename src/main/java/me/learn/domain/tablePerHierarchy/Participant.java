@@ -101,4 +101,10 @@ public class Participant {
 		
 	}
 	
+	public boolean equals(Object obj){
+		if(!(obj instanceof Participant))
+			return false;
+		return name.equals(((Participant)obj).getName());
+	}
+	
 }
