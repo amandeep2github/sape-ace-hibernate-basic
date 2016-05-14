@@ -37,4 +37,18 @@ public class Skill {
 		
 	}
 	
+	@Override
+	public int hashCode(){
+		return name.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj){
+		if(!(obj instanceof Skill))
+			return false;
+		
+		return name.equals(((Skill)obj).getName());
+		
+	}
+	
 }

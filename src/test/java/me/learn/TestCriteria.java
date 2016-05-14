@@ -1,5 +1,7 @@
 package me.learn;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,41 +24,81 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestCriteria {
 	
 	static SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 	private static final Logger logger = Logger.getLogger(TestCriteria.class.getName());
-	 
+
+	@Test
+	public void testParticularTrainerIsFetched(){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Trainer.class);
+		List<Trainer> list = criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).add(Restrictions.eq("name", "Amit")).list();
+		assertEquals(1, list.size());
+		assertEquals("Amit", list.get(0).getName());
+	}
+	
+	@Test
+	public void testTrainerExpertInJava(){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Trainer.class);
+		List<Trainer> list = criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).
+				createCriteria("skills").add(
+						Restrictions.and(
+							Restrictions.eq("name", "Java"),
+							Restrictions.eq("proficiency", PROFICIENCY.EXPERT)
+						)).addOrder(Property.forName("name").asc())
+						.list();
+		assertEquals(2, list.size());
+		assertEquals("Amandeep", list.get(0).getName());
+		assertEquals("Amit", list.get(1).getName());
+	}
+	
+	
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		createSessionFactory();
-		Trainer trnr1 = createTrainer("Amandeep", "amandeep@sapient.xyz", "04-11-2008", TITLE.MGR);
-		Trainer trnr2 = createTrainer("Amit", "amitj@sapient.xyz", "15-06-2011", TITLE.SAL1);
-		Skill skillJava = new Skill();
-		skillJava.setName("Java");
-		skillJava.setProficiency(PROFICIENCY.INTERMEDIATE);
-		Skill skillOracle = new Skill();
-		skillOracle.setName("Oracle");
-		skillOracle.setProficiency(PROFICIENCY.INTERMEDIATE);
-		Set<Skill> skills = new HashSet<Skill>();
-		skills.add(skillJava);
-		skills.add(skillOracle);
-		trnr1.setSkills(skills);
+		Trainer trnrAmandeep = createTrainer("Amandeep", "amandeep@sapient.xyz", "04-11-2008", TITLE.MGR);
+		Trainer trnrAmit = createTrainer("Amit", "amitj@sapient.xyz", "15-06-2011", TITLE.SAL1);
+		
+		Set<Skill> skillsAmandeep = new HashSet<Skill>();
+		skillsAmandeep.add(createSkill("Java", PROFICIENCY.EXPERT));
+		skillsAmandeep.add(createSkill("Oracle", PROFICIENCY.INTERMEDIATE));
+		skillsAmandeep.add(createSkill("Spring", PROFICIENCY.INTERMEDIATE));
+		skillsAmandeep.add(createSkill("perl", PROFICIENCY.INTERMEDIATE));
+		trnrAmandeep.setSkills(skillsAmandeep);
+		
+		Set<Skill> skillsAmit = new HashSet<Skill>();
+		skillsAmit.add(createSkill("Java", PROFICIENCY.EXPERT));
+		skillsAmit.add(createSkill("Oracle", PROFICIENCY.INTERMEDIATE));
+		skillsAmit.add(createSkill("Spring", PROFICIENCY.EXPERT));
+		skillsAmit.add(createSkill("perl", PROFICIENCY.BEGINNER));
+		trnrAmit.setSkills(skillsAmit);
+		
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-		session.save(trnr1);
-		session.save(trnr2);
+		session.save(trnrAmandeep);
+		session.save(trnrAmit);
 		
 		session.flush();
-
 		session.close();
+	}
+
+	private static Skill createSkill(String name, PROFICIENCY proficiency) {
+		Skill skillJava = new Skill();
+		skillJava.setName(name);
+		skillJava.setProficiency(proficiency);
+		return skillJava;
 	}
 	
 	private static void createSessionFactory(){
@@ -83,7 +125,7 @@ public class TestCriteria {
 		Session session = sessionFactory.openSession();
 		//Transaction t = session.beginTransaction();
 		Criteria criteria = session.createCriteria(Trainer.class);
-		List<Trainer> trainers = criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
+		List<Trainer> trainers = criteria.list();//
 		for(Trainer trnr: trainers){
 			logger.log(Level.INFO, String.format("Participant - %s", trnr));
 //			for(Skill skill:trnr.getSkills()){
@@ -105,21 +147,16 @@ public class TestCriteria {
 
 	@Before
 	public void setUp() throws Exception {
-		
-		
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		
 	}
 
 	@Test
 	public void testCreationTablePerHierarchyData() {
 		//fail("Not yet implemented");
 		assert(true);
-		
-		
 	}
 	
 	private static Trainer createTrainer(String name, String email, String doj, TITLE title){
@@ -143,7 +180,4 @@ public class TestCriteria {
 		trnr.setType(TRAINER_TYPE.INHOUSE);
 		return trnr;
 	}
-	
-	
-
 }
