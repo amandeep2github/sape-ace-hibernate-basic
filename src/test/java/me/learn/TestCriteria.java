@@ -24,6 +24,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.junit.After;
@@ -39,32 +42,77 @@ public class TestCriteria {
 	private static final Logger logger = Logger.getLogger(TestCriteria.class.getName());
 
 	@Test
+	@Ignore
 	public void testParticularTrainerIsFetched(){
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Trainer.class);
-		List<Trainer> list = criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).add(Restrictions.eq("name", "Amit")).list();
-		assertEquals(1, list.size());
-		assertEquals("Amit", list.get(0).getName());
+		Criterion criterionName = Restrictions.eq("name", "Amit");
+		Criterion criterionTitle = Restrictions.eq("title", TITLE.SAL1);
+		criteria.add(criterionName);
+		criteria.add(criterionTitle);
+		Trainer trnr = (Trainer) criteria.uniqueResult();
+		assertEquals("Amit", trnr.getName());
+		session.close();
 	}
 	
 	@Test
+	@Ignore
 	public void testTrainerExpertInJava(){
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Trainer.class);
-		List<Trainer> list = criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).
-				createCriteria("skills").add(
-						Restrictions.and(
-							Restrictions.eq("name", "Java"),
-							Restrictions.eq("proficiency", PROFICIENCY.EXPERT)
-						)).addOrder(Property.forName("name").asc())
-						.list();
+		@SuppressWarnings("unchecked")
+		List<Trainer> list = criteria//.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+								.createCriteria("skills")
+								.add(
+										Restrictions.and(
+											Restrictions.eq("name", "Java"),
+											Restrictions.eq("proficiency", PROFICIENCY.EXPERT)
+										))
+								.addOrder(Property.forName("name").asc())
+								.list();
 		assertEquals(2, list.size());
 		assertEquals("Amandeep", list.get(0).getName());
 		assertEquals("Amit", list.get(1).getName());
+		session.close();
 	}
 	
-	
+	@Test
+	@Ignore
+	public void testTrainerWithLatestJoinDate(){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Trainer.class);
+		@SuppressWarnings("unchecked")
+		Date date = (Date) criteria.setProjection(Projections.max("dateOfJoining")).uniqueResult();
+		assertEquals("15-06-2011", sdf.format(date));
+		session.close();
+	}
 
+	@Test
+	//@Ignore
+	public void testSqlRestriction(){
+		Session session = sessionFactory.openSession();
+		//Here criteria made on Participant not Trainer
+		//as {alias}.name used would fail as 'name' is in Participant class
+		Criteria criteria = session.createCriteria(Participant.class);
+		Participant trnr = (Participant) criteria.add(Restrictions.sqlRestriction("(select 'Amandeep')={alias}.name")).uniqueResult();
+		assertEquals("Amandeep", trnr.getName());
+		session.close();
+	}
+	
+	@Test
+	@Ignore
+	public void testDetachedCriteria(){
+		DetachedCriteria dc = DetachedCriteria.forClass(Trainer.class);
+		dc.add(Restrictions.eq("name", "Amandeep"));
+		
+		Session session = sessionFactory.openSession();
+		Criteria criteria = dc.getExecutableCriteria(session);
+		@SuppressWarnings("unchecked")
+		Trainer trnr = (Trainer) criteria.uniqueResult();
+		assertEquals("Amandeep", trnr.getName());
+		session.close();
+	}
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		createSessionFactory();
@@ -125,7 +173,9 @@ public class TestCriteria {
 		Session session = sessionFactory.openSession();
 		//Transaction t = session.beginTransaction();
 		Criteria criteria = session.createCriteria(Trainer.class);
-		List<Trainer> trainers = criteria.list();//
+		List<Trainer> trainers = criteria
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.list();//
 		for(Trainer trnr: trainers){
 			logger.log(Level.INFO, String.format("Participant - %s", trnr));
 //			for(Skill skill:trnr.getSkills()){
@@ -151,12 +201,6 @@ public class TestCriteria {
 
 	@After
 	public void tearDown() throws Exception {
-	}
-
-	@Test
-	public void testCreationTablePerHierarchyData() {
-		//fail("Not yet implemented");
-		assert(true);
 	}
 	
 	private static Trainer createTrainer(String name, String email, String doj, TITLE title){
