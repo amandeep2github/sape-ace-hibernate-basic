@@ -92,10 +92,10 @@ public class TestTablePerConcreteClass {
 	@Test
 	public void testCreationTablePerCriteriaData() {
 		//fail("Not yet implemented");
-		Participant trnr1 = createTrainer("Amandeep", "amandeep@sapient.xyz", "04-11-2008", TITLE.MGR);
-		Participant trnr2 = createTrainer("Amit", "amitj@sapient.xyz", "15-06-2011", TITLE.SAL1);
-		Participant trne1 = createTrainee("Priya", "priyas@sapient.xyz", "10-09-2013", TITLE.AL2);
-		Participant trne2 = createTrainee("Mona", "monas@sapient.xyz", "10-09-2013", TITLE.AL2);
+		Participant trnr1 = createTrainer("Trainer1", "Trainer1@sapient.xyz", "04-11-2008", TITLE.MGR);
+		Participant trnr2 = createTrainer("Trainer2", "Trainer2j@sapient.xyz", "15-06-2011", TITLE.SAL1);
+		Participant trne1 = createTrainee("TraineeA", "TraineeAs@sapient.xyz", "10-09-2013", TITLE.AL2);
+		Participant trne2 = createTrainee("TraineeB", "TraineeBs@sapient.xyz", "10-09-2013", TITLE.AL2);
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		session.save(trnr1);
