@@ -8,16 +8,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.Immutable;
+
 import me.learn.domain.PROFICIENCY;
 
 @Entity
+@Immutable
 public class Skill {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	@Column
 	private String name;
-	@Column
 	@Enumerated(value=EnumType.STRING)
 	private PROFICIENCY proficiency;
 	public String getName() {

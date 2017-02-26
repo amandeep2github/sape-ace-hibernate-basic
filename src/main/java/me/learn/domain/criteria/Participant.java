@@ -3,6 +3,7 @@ package me.learn.domain.criteria;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,14 +12,24 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
+
+import org.apache.log4j.Logger;
+import org.hibernate.annotations.Immutable;
 
 import me.learn.domain.TITLE;
 
+@NamedQueries({@NamedQuery(name="findAllParticipant", query="from me.learn.domain.criteria.Participant p")})
 @Entity
+//@Immutable
 @Table(name="participant_table_per_subclass_criteria")
 @Inheritance(strategy=InheritanceType.JOINED)
 public class Participant {
+	
+	private static Logger logger = Logger.getLogger(Participant.class);
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
@@ -35,6 +46,12 @@ public class Participant {
 	private TITLE title;
 	@Column(name="date_leaving")
 	private Date dateOfLeaving;
+	
+	@Embedded
+	private Address address;
+	
+	//@Embedded
+	//private Address permanentAddress;
 	@Column(name="ins_ts")
 	private Date dateCreated;
 	@Column(name="upd_ts")
@@ -93,6 +110,48 @@ public class Participant {
 	
 	public String toString(){
 		return name;
+		
+	}
+	public Address getAddress() {
+		return address;
+	}
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+//	public Address getPermanentAddress() {
+//		return permanentAddress;
+//	}
+//	public void setPermanentAddress(Address permanentAddress) {
+//		this.permanentAddress = permanentAddress;
+//	}
+	
+	@PrePersist
+	public void onPrePersist(){
+		logger.info("This is a callback method for "+this.getClass());
+		logger.info("value is "+this.getName());
+	}
+	
+	public void onPostPersist(){
+		
+	}
+	
+	public void onPostLoad(){
+		
+	}
+	
+	public void onPreUpdate(){
+		
+	}
+	
+	public void onPostUpdate(){
+		
+	}
+	
+	public void onPreRemove(){
+		
+	}
+
+	public void onPostRemove(){
 		
 	}
 	

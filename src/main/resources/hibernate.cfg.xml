@@ -12,6 +12,10 @@
 	<session-factory >
 		<property name="show_sql">true</property>
 		<property name="hbm2ddl.auto">create</property> 
-			
+		<property name="format_sql">true</property>	
+		<property name="hibernate.current_session_context_class">thread</property>
+		<event type="load">
+            <listener class="me.learn.domain.criteria.HibernateEventListener"/>
+        </event>
 	</session-factory>
 </hibernate-configuration>

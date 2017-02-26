@@ -8,6 +8,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
+
+
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +24,7 @@ import me.learn.domain.criteria.Skill;
 import me.learn.domain.criteria.Trainer;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
@@ -35,23 +41,38 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class TestCriteria {
 	
 	static SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 	private static final Logger logger = Logger.getLogger(TestCriteria.class.getName());
+	//private static final Logger logger = LoggerFactory.getLogger(TestCriteria.class);
 
+	
+	@Test
+	//@Ignore
+	public void testNoOfTrainers(){
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery("from Trainer");
+		List trainers = query.list();
+		
+		assertEquals(2, trainers.size());
+		session.close();
+	}
+	
 	@Test
 	@Ignore
 	public void testParticularTrainerIsFetched(){
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Trainer.class);
-		Criterion criterionName = Restrictions.eq("name", "Amit");
+		Criterion criterionName = Restrictions.eq("name", "Trainer2");
 		Criterion criterionTitle = Restrictions.eq("title", TITLE.SAL1);
 		criteria.add(criterionName);
 		criteria.add(criterionTitle);
 		Trainer trnr = (Trainer) criteria.uniqueResult();
-		assertEquals("Amit", trnr.getName());
+		assertEquals("Trainer2", trnr.getName());
 		session.close();
 	}
 	
@@ -71,8 +92,29 @@ public class TestCriteria {
 								.addOrder(Property.forName("name").asc())
 								.list();
 		assertEquals(2, list.size());
-		assertEquals("Amandeep", list.get(0).getName());
-		assertEquals("Amit", list.get(1).getName());
+		assertEquals("Trainer1", list.get(0).getName());
+		assertEquals("Trainer2", list.get(1).getName());
+		session.close();
+	}
+	
+	@Test
+	@Ignore
+	public void testTrainerExpertInJavaUsingJPACriteria(){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Trainer.class);
+		@SuppressWarnings("unchecked")
+		List<Trainer> list = criteria//.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+								.createCriteria("skills")
+								.add(
+										Restrictions.and(
+											Restrictions.eq("name", "Java"),
+											Restrictions.eq("proficiency", PROFICIENCY.EXPERT)
+										))
+								.addOrder(Property.forName("name").asc())
+								.list();
+		assertEquals(2, list.size());
+		assertEquals("Trainer1", list.get(0).getName());
+		assertEquals("Trainer2", list.get(1).getName());
 		session.close();
 	}
 	
@@ -90,12 +132,13 @@ public class TestCriteria {
 	@Test
 	//@Ignore
 	public void testSqlRestriction(){
+		logger.info("In testSqlRestriction()");
 		Session session = sessionFactory.openSession();
 		//Here criteria made on Participant not Trainer
 		//as {alias}.name used would fail as 'name' is in Participant class
 		Criteria criteria = session.createCriteria(Participant.class);
-		Participant trnr = (Participant) criteria.add(Restrictions.sqlRestriction("(select 'Amandeep')={alias}.name")).uniqueResult();
-		assertEquals("Amandeep", trnr.getName());
+		Participant trnr = (Participant) criteria.add(Restrictions.sqlRestriction("(select 'Trainer1')={alias}.name")).uniqueResult();
+		assertEquals("Trainer1", trnr.getName());
 		session.close();
 	}
 	
@@ -103,40 +146,40 @@ public class TestCriteria {
 	@Ignore
 	public void testDetachedCriteria(){
 		DetachedCriteria dc = DetachedCriteria.forClass(Trainer.class);
-		dc.add(Restrictions.eq("name", "Amandeep"));
+		dc.add(Restrictions.eq("name", "Trainer1"));
 		
 		Session session = sessionFactory.openSession();
 		Criteria criteria = dc.getExecutableCriteria(session);
 		@SuppressWarnings("unchecked")
 		Trainer trnr = (Trainer) criteria.uniqueResult();
-		assertEquals("Amandeep", trnr.getName());
+		assertEquals("Trainer1", trnr.getName());
 		session.close();
 	}
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		createSessionFactory();
-		Trainer trnrAmandeep = createTrainer("Amandeep", "amandeep@sapient.xyz", "04-11-2008", TITLE.MGR);
-		Trainer trnrAmit = createTrainer("Amit", "amitj@sapient.xyz", "15-06-2011", TITLE.SAL1);
+		Trainer trnrTrainer1 = createTrainer("Trainer1", "Trainer1@sapient.xyz", "04-11-2008", TITLE.MGR);
+		Trainer trnrTrainer2 = createTrainer("Trainer2", "Trainer2j@sapient.xyz", "15-06-2011", TITLE.SAL1);
 		
-		Set<Skill> skillsAmandeep = new HashSet<Skill>();
-		skillsAmandeep.add(createSkill("Java", PROFICIENCY.EXPERT));
-		skillsAmandeep.add(createSkill("Oracle", PROFICIENCY.INTERMEDIATE));
-		skillsAmandeep.add(createSkill("Spring", PROFICIENCY.INTERMEDIATE));
-		skillsAmandeep.add(createSkill("perl", PROFICIENCY.INTERMEDIATE));
-		trnrAmandeep.setSkills(skillsAmandeep);
+		Set<Skill> skillsTrainer1 = new HashSet<Skill>();
+		skillsTrainer1.add(createSkill("Java", PROFICIENCY.EXPERT));
+		skillsTrainer1.add(createSkill("Oracle", PROFICIENCY.INTERMEDIATE));
+		skillsTrainer1.add(createSkill("Spring", PROFICIENCY.INTERMEDIATE));
+		skillsTrainer1.add(createSkill("perl", PROFICIENCY.INTERMEDIATE));
+		trnrTrainer1.setSkills(skillsTrainer1);
 		
-		Set<Skill> skillsAmit = new HashSet<Skill>();
-		skillsAmit.add(createSkill("Java", PROFICIENCY.EXPERT));
-		skillsAmit.add(createSkill("Oracle", PROFICIENCY.INTERMEDIATE));
-		skillsAmit.add(createSkill("Spring", PROFICIENCY.EXPERT));
-		skillsAmit.add(createSkill("perl", PROFICIENCY.BEGINNER));
-		trnrAmit.setSkills(skillsAmit);
+		Set<Skill> skillsTrainer2 = new HashSet<Skill>();
+		skillsTrainer2.add(createSkill("Java", PROFICIENCY.EXPERT));
+		skillsTrainer2.add(createSkill("Oracle", PROFICIENCY.INTERMEDIATE));
+		skillsTrainer2.add(createSkill("Spring", PROFICIENCY.EXPERT));
+		skillsTrainer2.add(createSkill("perl", PROFICIENCY.BEGINNER));
+		trnrTrainer2.setSkills(skillsTrainer2);
 		
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-		session.save(trnrAmandeep);
-		session.save(trnrAmit);
+		session.save(trnrTrainer1);
+		session.save(trnrTrainer2);
 		
 		session.flush();
 		session.close();
@@ -178,6 +221,7 @@ public class TestCriteria {
 				.list();//
 		for(Trainer trnr: trainers){
 			logger.log(Level.INFO, String.format("Participant - %s", trnr));
+			//logger.info("Participant - {}", trnr);
 //			for(Skill skill:trnr.getSkills()){
 //				logger.log(Level.INFO, String.format("Skill - %s", skill));
 //				
